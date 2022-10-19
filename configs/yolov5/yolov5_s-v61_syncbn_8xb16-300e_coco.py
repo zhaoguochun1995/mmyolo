@@ -1,7 +1,8 @@
 _base_ = '../_base_/default_runtime.py'
 
 # dataset settings
-data_root = 'data/coco/'
+#data_root = 'data/coco/'
+data_root = '/mnt/lustre/share/zhaoguochun/dataset/mscoco2017/'
 dataset_type = 'YOLOv5CocoDataset'
 
 # parameters that often need to be modified
@@ -36,6 +37,7 @@ env_cfg = dict(cudnn_benchmark=True)
 
 model = dict(
     type='YOLODetector',
+    use_syncbn=False,
     data_preprocessor=dict(
         type='mmdet.DetDataPreprocessor',
         mean=[0., 0., 0.],

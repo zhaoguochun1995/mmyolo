@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import Optional
-
+import torch
 import torch.nn as nn
 from mmengine.dist import get_world_size
 from mmengine.logging import print_log
@@ -103,7 +103,8 @@ class YOLOv5OptimizerConstructor:
             if hasattr(v, 'bias') and isinstance(v.bias, nn.Parameter):
                 params_groups[2].append(v.bias)
             # Includes SyncBatchNorm
-            if isinstance(v, nn.modules.batchnorm._NormBase):
+            if ('parrots' != torch.__version__ and isinstance(v, nn.modules.batchnorm._NormBase)) or \
+               ('parrots' == torch.__version__ and isinstance(v, nn.modules.batchnorm._BatchNorm)): # zhaoguochun add
                 params_groups[1].append(v.weight)
             elif hasattr(v, 'weight') and isinstance(v.weight, nn.Parameter):
                 params_groups[0].append(v.weight)
