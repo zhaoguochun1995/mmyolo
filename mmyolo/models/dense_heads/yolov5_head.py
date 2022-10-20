@@ -607,11 +607,9 @@ class YOLOv5Head(BaseDenseHead):
             # Convert xyxy bbox to yolo format.
             for i, gt_instances in enumerate(batch_gt_instances):
                 img_shape = batch_img_metas[i]['batch_input_shape']
-                #bboxes = gt_instances.bboxes[i].reshape(-1)[0].tensor
                 bboxes = gt_instances.bboxes
                 labels = gt_instances.labels
 
-                #import pdb;pdb.set_trace()
                 xy1, xy2 = bboxes.split((2, 2), dim=-1)
                 bboxes = torch.cat([(xy2 + xy1) / 2, (xy2 - xy1)], dim=-1)
                 # normalized to 0-1
