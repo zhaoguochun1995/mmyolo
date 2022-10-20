@@ -72,10 +72,7 @@ class ExpMomentumEMA(MMDET_ExpMomentumEMA):
         """
         momentum = (1 - self.momentum) * math.exp(
             -float(1 + steps) / self.gamma) + self.momentum
-        #averaged_param.lerp_(source_param, momentum)
-        averaged_param = averaged_param.cpu()
-        averaged_param.lerp_(source_param.cpu(), momentum)
-        averaged_param = averaged_param.cuda()
+        averaged_param.lerp_(source_param, momentum)
 
     def update_parameters(self, model: nn.Module):
         """Update the parameters after each training step.
