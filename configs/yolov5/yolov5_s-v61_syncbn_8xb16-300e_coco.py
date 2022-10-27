@@ -222,6 +222,7 @@ custom_hooks = [
         ema_type='ExpMomentumEMA',
         momentum=0.0001,
         update_buffers=True,
+        #strict_load=False,
         priority=49)
 ]
 
@@ -235,6 +236,7 @@ test_evaluator = val_evaluator
 train_cfg = dict(
     type='EpochBasedTrainLoop',
     max_epochs=max_epochs,
-    val_interval=save_epoch_intervals)
+    #val_interval=save_epoch_intervals)
+    val_interval=1)
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')

@@ -489,6 +489,7 @@ class YOLOv5Head(BaseDenseHead):
             batch_size, _, h, w = bbox_preds[i].shape
             target_obj = torch.zeros_like(objectnesses[i])
 
+
             # empty gt bboxes
             if batch_targets_normed.shape[1] == 0:
                 loss_box += bbox_preds[i].sum() * 0
@@ -505,12 +506,24 @@ class YOLOv5Head(BaseDenseHead):
             # (num_base_priors, num_bboxes, 7)
             batch_targets_scaled = batch_targets_normed * scaled_factor
 
+
             # 2. Shape match
             wh_ratio = batch_targets_scaled[...,
                                             4:6] / priors_base_sizes_i[:, None]
-            match_inds = torch.max(
-                wh_ratio, 1 / wh_ratio).max(2)[0] < self.prior_match_thr
+            #print(f"wh_ratio.shape:{wh_ratio.shape}, strides:{wh_ratio.strides}, {wh_ratio.device}, {wh_ratio.dtype}")
+
+            #match_inds = torch.max(
+            #    wh_ratio, 1 / wh_ratio).max(2)[0] < self.prior_match_thr
+            match_inds = torch.max(wh_ratio, 1 / wh_ratio).max(2)[0] < self.prior_match_thr
+            #wh_ratio = wh_ratio.cpu()
+            #match_inds = torch.max(wh_ratio, 1 / wh_ratio).max(2)[0] < self.prior_match_thr
+            #wh_ratio = wh_ratio.cuda()
+            #match_inds = match_inds.cuda()
+            #print(f"match_inds.shape:{match_inds.shape}, strides:{match_inds.strides}, {match_inds.device}, {match_inds.dtype}")
+            #print(f"batch_targets_scaled.shape:{batch_targets_scaled.shape}, strides:{batch_targets_scaled.strides}")
+
             batch_targets_scaled = batch_targets_scaled[match_inds]
+            #batch_targets_scaled = (batch_targets_scaled.cpu()[match_inds.cpu()]).cuda()
 
             # no gt bbox matches anchor
             if batch_targets_scaled.shape[0] == 0:
@@ -533,6 +546,8 @@ class YOLOv5Head(BaseDenseHead):
             offset_inds = torch.stack(
                 (torch.ones_like(left), left, up, right, bottom))
 
+            #import pdb;
+            #pdb.set_trace()
             batch_targets_scaled = batch_targets_scaled.repeat(
                 (5, 1, 1))[offset_inds]
             retained_offsets = self.grid_offset.repeat(1, offset_inds.shape[1],
@@ -562,8 +577,14 @@ class YOLOv5Head(BaseDenseHead):
 
             # obj loss
             iou = iou.detach().clamp(0)
+            #import pdb; pdb.set_trace()
             target_obj[img_inds, priors_inds, grid_y_inds,
                        grid_x_inds] = iou.type(target_obj.dtype)
+            #pdb.set_trace()
+            #target_obj = target_obj.cpu()
+            #target_obj[img_inds.cpu(), priors_inds.cpu(), grid_y_inds.cpu(),
+            #           grid_x_inds.cpu()] = iou.type(target_obj.dtype).cpu()
+            #target_obj = target_obj.cuda()
             loss_obj += self.loss_obj(objectnesses[i],
                                       target_obj) * self.obj_level_weights[i]
 
