@@ -103,8 +103,9 @@ class YOLOv5OptimizerConstructor:
             if hasattr(v, 'bias') and isinstance(v.bias, nn.Parameter):
                 params_groups[2].append(v.bias)
             # Includes SyncBatchNorm
-            if ('parrots' != torch.__version__ and isinstance(v, nn.modules.batchnorm._NormBase)) or \
-               ('parrots' == torch.__version__ and isinstance(v, nn.modules.batchnorm._BatchNorm)): # zhaoguochun add
+            #if ('parrots' != torch.__version__ and isinstance(v, nn.modules.batchnorm._NormBase)) or \
+            #   ('parrots' == torch.__version__ and isinstance(v, nn.modules.batchnorm._BatchNorm)): # zhaoguochun add
+            if isinstance(v, nn.modules.batchnorm._NormBase):
                 params_groups[1].append(v.weight)
             elif hasattr(v, 'weight') and isinstance(v.weight, nn.Parameter):
                 params_groups[0].append(v.weight)
