@@ -11,7 +11,7 @@ from mmengine.utils import digit_version
 
 from mmyolo.registry import MODELS
 
-if 'parrots' != torch.__version__ and digit_version(torch.__version__) >= digit_version('1.7.0'):
+if digit_version(torch.__version__) >= digit_version('1.7.0'):
     MODELS.register_module(module=nn.SiLU, name='SiLU')
 else:
 
