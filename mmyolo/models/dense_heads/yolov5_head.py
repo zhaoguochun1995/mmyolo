@@ -508,10 +508,8 @@ class YOLOv5Head(BaseDenseHead):
             # 2. Shape match
             wh_ratio = batch_targets_scaled[...,
                                             4:6] / priors_base_sizes_i[:, None]
-
             match_inds = torch.max(
                 wh_ratio, 1 / wh_ratio).max(2)[0] < self.prior_match_thr
-            match_inds = torch.max(wh_ratio, 1 / wh_ratio).max(2)[0] < self.prior_match_thr
             batch_targets_scaled = batch_targets_scaled[match_inds]
 
             # no gt bbox matches anchor
