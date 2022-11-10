@@ -38,6 +38,7 @@ env_cfg = dict(cudnn_benchmark=True)
 model = dict(
     type='YOLODetector',
     use_syncbn=True,
+    #use_syncbn=False,
     data_preprocessor=dict(
         type='mmdet.DetDataPreprocessor',
         mean=[0., 0., 0.],
