@@ -37,8 +37,8 @@ env_cfg = dict(cudnn_benchmark=True)
 
 model = dict(
     type='YOLODetector',
-    use_syncbn=True,
-    #use_syncbn=False,
+    #use_syncbn=True,
+    use_syncbn=False,
     data_preprocessor=dict(
         type='mmdet.DetDataPreprocessor',
         mean=[0., 0., 0.],
@@ -239,3 +239,5 @@ train_cfg = dict(
     val_interval=save_epoch_intervals)
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
+
+fp16 = dict(loss_scale=512.)
