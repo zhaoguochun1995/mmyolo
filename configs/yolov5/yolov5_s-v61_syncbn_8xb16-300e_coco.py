@@ -240,4 +240,5 @@ train_cfg = dict(
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
 
-fp16 = dict(loss_scale=512.)
+#fp16 = dict(loss_scale=512.)
+fp16 = dict(loss_scale=dict(init_scale=512))
