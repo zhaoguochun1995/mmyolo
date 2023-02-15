@@ -173,7 +173,7 @@ class BatchATSSAssigner(nn.Module):
         # soft label with iou
         if pred_bboxes is not None:
             ious = yolov6_iou_calculator(gt_bboxes, pred_bboxes) * pos_mask
-            ious = ious.max(dim=-2)[0].unsqueeze(-1)
+            ious = ious.max(axis=-2)[0].unsqueeze(-1)
             assigned_scores *= ious
 
         assigned_result['assigned_labels'] = assigned_labels.long()
@@ -278,12 +278,11 @@ class BatchATSSAssigner(nn.Module):
             -1)[flatten_indexes]
         candidate_overlaps_reshape = candidate_overlaps_reshape.reshape(
             [batch_size, num_gt, -1])
-        #import pdb
-        #pdb.set_trace()
+
         overlaps_mean_per_gt = candidate_overlaps_reshape.mean(
-            dim=-1, keepdim=True)
+            axis=-1, keepdim=True)
         overlaps_std_per_gt = candidate_overlaps_reshape.std(
-            dim=-1, keepdim=True)
+            axis=-1, keepdim=True)
         overlaps_thr_per_gt = overlaps_mean_per_gt + overlaps_std_per_gt
 
         return overlaps_thr_per_gt, candidate_overlaps

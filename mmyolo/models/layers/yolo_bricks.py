@@ -1293,7 +1293,7 @@ class CSPResLayer(nn.Module):
             x = self.conv_down(x)
         y1 = self.conv1(x)
         y2 = self.blocks(self.conv2(x))
-        y = torch.cat([y1, y2], dim=1)
+        y = torch.cat([y1, y2], axis=1)
         if self.attn is not None:
             y = self.attn(y)
         y = self.conv3(y)
