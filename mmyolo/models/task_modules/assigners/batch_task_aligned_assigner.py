@@ -128,8 +128,8 @@ class BatchTaskAlignedAssigner(nn.Module):
 
         # normalize
         alignment_metrics *= pos_mask
-        pos_align_metrics = alignment_metrics.max(axis=-1, keepdim=True)[0]
-        pos_overlaps = (overlaps * pos_mask).max(axis=-1, keepdim=True)[0]
+        pos_align_metrics = alignment_metrics.max(dim=-1, keepdim=True)[0]
+        pos_overlaps = (overlaps * pos_mask).max(dim=-1, keepdim=True)[0]
         norm_align_metric = (
             alignment_metrics * pos_overlaps /
             (pos_align_metrics + self.eps)).max(-2)[0].unsqueeze(-1)
@@ -252,14 +252,14 @@ class BatchTaskAlignedAssigner(nn.Module):
         topk_metrics, topk_idxs = torch.topk(
             alignment_gt_metrics,
             self.topk,
-            axis=-1,
+            dim=-1,
             largest=using_largest_topk)
         if topk_mask is None:
-            topk_mask = (topk_metrics.max(axis=-1, keepdim=True) >
+            topk_mask = (topk_metrics.max(dim=-1, keepdim=True) >
                          self.eps).tile([1, 1, self.topk])
         topk_idxs = torch.where(topk_mask, topk_idxs,
                                 torch.zeros_like(topk_idxs))
-        is_in_topk = F.one_hot(topk_idxs, num_priors).sum(axis=-2)
+        is_in_topk = F.one_hot(topk_idxs, num_priors).sum(dim=-2)
         is_in_topk = torch.where(is_in_topk > 1, torch.zeros_like(is_in_topk),
                                  is_in_topk)
         return is_in_topk.to(alignment_gt_metrics.dtype)
