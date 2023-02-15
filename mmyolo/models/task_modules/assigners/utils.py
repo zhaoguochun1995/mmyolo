@@ -36,7 +36,7 @@ def select_candidates_in_gts(priors_points: Tensor,
         [priors_points - gt_bboxes_lt, gt_bboxes_rb - priors_points], dim=-1)
     bbox_deltas = bbox_deltas.reshape([batch_size, num_gt, priors_number, -1])
 
-    return (bbox_deltas.min(dim=-1)[0] > eps).to(gt_bboxes.dtype)
+    return (bbox_deltas.min(axis=-1)[0] > eps).to(gt_bboxes.dtype)
 
 
 def select_highest_overlaps(pos_mask: Tensor, overlaps: Tensor,
@@ -58,21 +58,21 @@ def select_highest_overlaps(pos_mask: Tensor, overlaps: Tensor,
         pos_mask (Tensor): The assigned positive sample mask,
             shape(batch_size, num_gt, num_priors)
     """
-    fg_mask_pre_prior = pos_mask.sum(dim=-2)
+    fg_mask_pre_prior = pos_mask.sum(axis=-2)
 
     # Make sure the positive sample matches the only one and is the largest IoU
     if fg_mask_pre_prior.max() > 1:
         mask_multi_gts = (fg_mask_pre_prior.unsqueeze(1) > 1).repeat(
             [1, num_gt, 1])
-        index = overlaps.argmax(dim=1)
+        index = overlaps.argmax(axis=1)
         is_max_overlaps = F.one_hot(index, num_gt)
         is_max_overlaps = \
             is_max_overlaps.permute(0, 2, 1).to(overlaps.dtype)
 
         pos_mask = torch.where(mask_multi_gts, is_max_overlaps, pos_mask)
-        fg_mask_pre_prior = pos_mask.sum(dim=-2)
+        fg_mask_pre_prior = pos_mask.sum(axis=-2)
 
-    gt_idx_pre_prior = pos_mask.argmax(dim=-2)
+    gt_idx_pre_prior = pos_mask.argmax(axis=-2)
     return gt_idx_pre_prior, fg_mask_pre_prior, pos_mask
 
 
