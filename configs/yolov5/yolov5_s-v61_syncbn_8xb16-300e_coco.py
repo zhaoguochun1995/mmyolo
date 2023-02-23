@@ -11,7 +11,7 @@ deepen_factor = 0.33
 widen_factor = 0.5
 max_epochs = 300
 save_epoch_intervals = 10
-train_batch_size_per_gpu = 16
+train_batch_size_per_gpu = 128
 train_num_workers = 8
 val_batch_size_per_gpu = 1
 val_num_workers = 2
@@ -44,6 +44,7 @@ env_cfg = dict(cudnn_benchmark=True)
 
 model = dict(
     type='YOLODetector',
+    use_syncbn=False,
     data_preprocessor=dict(
         type='mmdet.DetDataPreprocessor',
         mean=[0., 0., 0.],
@@ -200,7 +201,9 @@ test_dataloader = val_dataloader
 
 param_scheduler = None
 optim_wrapper = dict(
-    type='OptimWrapper',
+    #type='OptimWrapper',
+    type='AmpOptimWrapper',
+    loss_scale=512.,
     optimizer=dict(
         type='SGD',
         lr=base_lr,
@@ -236,12 +239,14 @@ val_evaluator = dict(
     type='mmdet.CocoMetric',
     proposal_nums=(100, 1, 10),
     ann_file=data_root + 'annotations/instances_val2017.json',
+    #collect_device='gpu',
     metric='bbox')
 test_evaluator = val_evaluator
 
 train_cfg = dict(
     type='EpochBasedTrainLoop',
     max_epochs=max_epochs,
+    #val_interval=1)
     val_interval=save_epoch_intervals)
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
