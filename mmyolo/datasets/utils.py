@@ -23,9 +23,9 @@ def yolov5_collate(data_batch: Sequence,
         datasamples = data_batch[i]['data_samples']
         inputs = data_batch[i]['inputs']
 
-        gt_bboxes = datasamples.gt_instances.bboxes.tensor.float()
-        gt_labels = datasamples.gt_instances.labels.float()
-        batch_idx = gt_labels.new_full((len(gt_labels), 1), i).float()
+        gt_bboxes = datasamples.gt_instances.bboxes.tensor
+        gt_labels = datasamples.gt_instances.labels
+        batch_idx = gt_labels.new_full((len(gt_labels), 1), i)
         bboxes_labels = torch.cat((batch_idx, gt_labels[:, None], gt_bboxes),
                                   dim=1)
         batch_bboxes_labels.append(bboxes_labels)
