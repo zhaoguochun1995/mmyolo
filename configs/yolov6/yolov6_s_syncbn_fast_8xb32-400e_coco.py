@@ -40,6 +40,7 @@ env_cfg = dict(cudnn_benchmark=True)
 
 model = dict(
     type='YOLODetector',
+    use_syncbn=False,
     data_preprocessor=dict(
         type='YOLOv5DetDataPreprocessor',
         mean=[0., 0., 0.],
@@ -205,6 +206,8 @@ test_dataloader = val_dataloader
 # The difference is that the scheduler_type of YOLOv6 is cosine.
 optim_wrapper = dict(
     type='OptimWrapper',
+    #type='AmpOptimWrapper',
+    #loss_scale=dict(init_scale=2.0**13, growth_interval=50),
     optimizer=dict(
         type='SGD',
         lr=base_lr,
@@ -244,6 +247,7 @@ val_evaluator = dict(
     type='mmdet.CocoMetric',
     proposal_nums=(100, 1, 10),
     ann_file=data_root + 'annotations/instances_val2017.json',
+    #collect_device='gpu',
     metric='bbox')
 test_evaluator = val_evaluator
 

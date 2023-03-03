@@ -11,8 +11,8 @@ deepen_factor = 0.33
 widen_factor = 0.5
 max_epochs = 300
 save_epoch_intervals = 10
-train_batch_size_per_gpu = 128
-train_num_workers = 8
+train_batch_size_per_gpu = 16
+train_num_workers = 16
 val_batch_size_per_gpu = 1
 val_num_workers = 2
 
@@ -201,9 +201,10 @@ test_dataloader = val_dataloader
 
 param_scheduler = None
 optim_wrapper = dict(
-    #type='OptimWrapper',
-    type='AmpOptimWrapper',
-    loss_scale=512.,
+    type='OptimWrapper',
+    #type='AmpOptimWrapper',
+    #loss_scale=dict(init_scale=2**13., growth_interval=300),
+
     optimizer=dict(
         type='SGD',
         lr=base_lr,
@@ -223,8 +224,7 @@ default_hooks = dict(
         type='CheckpointHook',
         interval=save_epoch_intervals,
         save_best='auto',
-        max_keep_ckpts=3))
-
+        max_keep_ckpts=30))
 custom_hooks = [
     dict(
         type='EMAHook',
