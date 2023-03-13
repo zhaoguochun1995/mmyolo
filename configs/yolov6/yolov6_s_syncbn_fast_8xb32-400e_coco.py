@@ -1,7 +1,8 @@
 _base_ = '../_base_/default_runtime.py'
 
 # dataset settings
-data_root = 'data/coco/'
+#data_root = 'data/coco/'
+data_root = '/mnt/lustre/share/zhaoguochun/dataset/mscoco2017/'
 dataset_type = 'YOLOv5CocoDataset'
 
 num_last_epochs = 15
@@ -162,7 +163,7 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/instances_train2017.json',
+        ann_file=data_root + 'annotations/instances_train2017.json',
         data_prefix=dict(img='train2017/'),
         filter_cfg=dict(filter_empty_gt=False, min_size=32),
         pipeline=train_pipeline))
