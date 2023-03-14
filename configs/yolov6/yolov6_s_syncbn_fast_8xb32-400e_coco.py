@@ -1,7 +1,8 @@
 _base_ = '../_base_/default_runtime.py'
 
 # dataset settings
-data_root = 'data/coco/'
+#data_root = 'data/coco/'
+data_root = '/mnt/lustre/share/zhaoguochun/dataset/mscoco2017/'
 dataset_type = 'YOLOv5CocoDataset'
 
 num_last_epochs = 15
@@ -39,6 +40,7 @@ env_cfg = dict(cudnn_benchmark=True)
 
 model = dict(
     type='YOLODetector',
+    use_syncbn=False,
     data_preprocessor=dict(
         type='YOLOv5DetDataPreprocessor',
         mean=[0., 0., 0.],
@@ -162,7 +164,7 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/instances_train2017.json',
+        ann_file=data_root + 'annotations/instances_train2017.json',
         data_prefix=dict(img='train2017/'),
         filter_cfg=dict(filter_empty_gt=False, min_size=32),
         pipeline=train_pipeline))
@@ -204,6 +206,8 @@ test_dataloader = val_dataloader
 # The difference is that the scheduler_type of YOLOv6 is cosine.
 optim_wrapper = dict(
     type='OptimWrapper',
+    #type='AmpOptimWrapper',
+    #loss_scale=dict(init_scale=2.0**13, growth_interval=50),
     optimizer=dict(
         type='SGD',
         lr=base_lr,
@@ -243,6 +247,7 @@ val_evaluator = dict(
     type='mmdet.CocoMetric',
     proposal_nums=(100, 1, 10),
     ann_file=data_root + 'annotations/instances_val2017.json',
+    #collect_device='gpu',
     metric='bbox')
 test_evaluator = val_evaluator
 
